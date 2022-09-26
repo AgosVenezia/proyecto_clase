@@ -1,2 +1,4 @@
 db.sqlite3
 proyecto_clase/__pycache__/
+cac/__pycache__/
+cac/migrations/__pycache__/
