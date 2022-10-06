@@ -118,7 +118,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+#El debug está en True(desarrollo), busca el directorio static dentro de las aplicaciones
 STATIC_URL = '/static/'
+
+#El debug está en True, busca un directorio static dentro del proyecto
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
+#En producción
+#esto se genera en producción y es la que deberemos crear, django ira a buscar ahi python manage.py collectstatic
+STATIC_ROOT = BASE_DIR / 'static_root'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
