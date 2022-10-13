@@ -7,6 +7,8 @@ from django.urls import reverse
 
 from django.template import loader
 
+from cac.forms import ContactoForm
+
 def index(request):
     #if(request.method=='GET'):
         #titulo = 'Titulo cuando se accede por GET - modificado'
@@ -35,12 +37,22 @@ def index(request):
         },
     ]
 
-    return render(request,'cac/publica/index.html',{
+    if(request.method == 'POST'):
+        contacto_form = ContactoForm(request.POST)
+        #deberia validar y realizar alguna accion  
+        #return render() que te lleve a alguna página con mensaje      
+    else:
+        contacto_form = ContactoForm()
+
+    return render(request,'cac/publica/index.html',
+                {'cursos':listado_cursos,'contacto_form':contacto_form})
+    
+    #return render(request,'cac/publica/index.html',{
                                     #'titulo_nombre':titulo,
-                                    'cursos':listado_cursos#,
+                                    #'cursos':listado_cursos#,
                                     #'parametros':parameters_get,
                                     #'hoy': datetime.now
-                                    })
+                                    #})
     
 def quienes_somos(request):
     #return redirect('saludar_por_defecto') #lleva a saludar o saludarbonito
