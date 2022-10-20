@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.template import loader
 
 from cac.forms import ContactoForm
+from django.contrib import messages
 
 def index(request):
     #if(request.method=='GET'):
@@ -40,8 +41,13 @@ def index(request):
     if(request.method == 'POST'):
         contacto_form = ContactoForm(request.POST)
         if(contacto_form.is_valid()):
-            pass
+            #enviar un mail al administrador con los datos
+            #guardar los datos en la base
+            messages.success(request,'Muchas gracias por contactarte, te esteremos respondiendo en breve.')
+            #messages.info(request,'Otro mensajito')
             #deberia validar y realizar alguna accion  
+        else:
+            messages.warning(request,'Por favor revisa los errores')
         #return render() que te lleve a alguna página con mensaje      
     else:
         contacto_form = ContactoForm()

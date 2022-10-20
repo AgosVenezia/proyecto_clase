@@ -10,45 +10,67 @@ def solo_caracteres(value):
 
 
 class ContactoForm(forms.Form):
-    nombre = forms.CharField(
+
+        TIPO_CONSULTA = (
+        ('','-Seleccione-'),
+        (1,'Inscripciones'),
+        (2,'Soporte Aula Virtual'),
+        (3,'Ser docente'),
+        )
+
+        nombre = forms.CharField(
             label='Nombre',
             required=False,
             validators=(solo_caracteres,),
             widget= forms.TextInput(attrs={'class':'form-control','placeholder':'Ingrese sólo texto'})
             )
-    email = forms.EmailField(
+
+        email = forms.EmailField(
             label='Email',
             max_length=50,
+            error_messages={
+                    'required': 'Por favor completa el campo',  
+                    #'max.lenght': '...',              
+                },
             widget= forms.TextInput(attrs={'class':'form-control','type':'email'})
             )
-    asunto = forms.CharField(
+
+        asunto = forms.CharField(
             label='Asunto',
             max_length=100,
             widget= forms.TextInput(attrs={'class':'form-control'})
             )
-    mensaje = forms.CharField(
+
+        mensaje = forms.CharField(
             label='Mensaje',
             max_length=500,
             widget=forms.Textarea(attrs={'class':'form-control','rows':5})
             )
-    suscripcion = forms.BooleanField(
+
+        suscripcion = forms.BooleanField(
             label='Deseo suscribirme a las novedades de Codo a Codo',
             required=False,
             widget=forms.CheckboxInput(attrs={'class':'form-check-input','value':1})
             )
 
-    def clean_mensaje(self):
-        data = self.cleaned_data['mensaje']
-        if len(data) < 10:
-            raise ValidationError("Debes especificar mejor el mensaje que nos envias")
-        return data
-    
-    #def clean(self):
-        #cleaned_data = super().clean()
-        #mensaje = cleaned_data.get("mensaje")
-        #asunto = cleaned_data.get("asunto")
+        tipo_consulta = forms.ChoiceField(
+                label='Tipo de consulta',
+                choices=TIPO_CONSULTA,
+                initial='2',
+                widget=forms.Select(attrs={'class':'form-control'})
+        )
 
-        #if "ayuda" not in asunto or "ayuda" not in mensaje:
-            #msg = "Debe agregar la palabara 'ayuda' en el campo."
-            #self.add_error('asunto', msg)
-            #self.add_error('mensaje', msg)
+        def clean_mensaje(self):
+                data = self.cleaned_data['mensaje']
+                if len(data) < 10:
+                        raise ValidationError("Debes especificar mejor el mensaje que nos envias")
+                return data
+    
+        #def clean(self):
+                #cleaned_data = super().clean()
+                #asunto = cleaned_data.get("asunto")
+                #suscripcion = cleaned_data.get("suscripcion")
+
+                #if suscripcion and asunto and "suscripcion" not in asunto:
+                        #msg = "Debe agregar la palabara 'suscripcion' al asunto."
+                        #self.add_error('asunto', msg)
