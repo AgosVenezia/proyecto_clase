@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cac',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
@@ -77,7 +78,7 @@ WSGI_APPLICATION = 'proyecto_clase.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'cac', 
+        'NAME': 'cac22819', 
         'USER': 'postgres', 
         'PASSWORD': 'codoacodo',
         'HOST': '127.0.0.1', 
