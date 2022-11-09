@@ -50,6 +50,14 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
 
+    def soft_delete(self):
+        self.baja=True
+        super().save()
+    
+    def restore(self):
+        self.baja=False
+        super().save()
+
 class Curso(models.Model):
     nombre = models.CharField(max_length=100,verbose_name='Nombre')
     descripcion = models.TextField(null=True,verbose_name='Descripcion')
@@ -59,6 +67,9 @@ class Curso(models.Model):
     categoria = models.ForeignKey(Categoria,on_delete=models.CASCADE)
     #estudiantes = models.ManyToManyField(Estudiante) # crearme una tabla intermedia automatica
     estudiantes = models.ManyToManyField(Estudiante,through='Inscripcion')
+
+    def __str__(self):
+        return self.nombre
 
 class Inscripcion(models.Model):
     
