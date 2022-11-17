@@ -1,12 +1,12 @@
 {% extends '../base_administracion.html' %}
 
-{% block titulo %}Categorias cursos{% endblock%}
+{% block titulo %}Estudiantes{% endblock%}
 
 {% block contenido %}
-<h1 class="mt-4">Categorias cursos</h1>
+<h1 class="mt-4">Estudiantes</h1>
 <ol class="breadcrumb mb-4">
     <li class="breadcrumb-item"><a href="{% url 'inicio_administracion' %}">Administracion</a></li>
-    <li class="breadcrumb-item active">Categorias</li>
+    <li class="breadcrumb-item active">Estudiantes</li>
 </ol>
 
 <div class="card">
@@ -23,10 +23,11 @@
                         <input type="text" 
                               id="nombre" 
                               name="nombre"
-                              placeholder="Ingrese el nombre" 
+                              placeholder="Ingrese el nombre o apellido" 
                               class="form-control">
                     </div>
                 </div>
+                
                 <div class="col-3 ">
                     <button class="btn btn-primary mt-4">Buscar</button>
                 </div>
@@ -37,31 +38,44 @@
 <br>
 <div class="card">
     <div class="card-body">
-        <a name="" id="" class="btn btn-success" href="{% url 'categorias_nuevo' %}" role="button"> <i class="fa-solid fa-circle-plus"></i> Nuevo</a>
+        <div class="col-md-12">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}" role="alert">
+                    {{message}}
+                </div>
+            {% endfor %}
+        </div>
+        <a name="" id="" class="btn btn-success" href="{% url 'estudiantes_nuevo' %}" role="button"> <i class="fa-solid fa-circle-plus"></i> Nuevo</a>
         <!-- bs5-table-defaul -->
         <table class="table">
             <thead>
                 <tr>
                     <th>Id</th>
                     <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Dni</th>
+                    <th>Email</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for categoria in lista_categorias %}
+                {% for estudiante in estudiantes %}
                     <tr>
-                        <td>{{categoria.id}}</td>
-                        <td>{{categoria.nombre}}</td>
+                        <td>{{estudiante.id}}</td>
+                        <td>{{estudiante.nombre_m}}</td>
+                        <td>{{estudiante.apellido_m}}</td>
+                        <td>{{estudiante.dni_m}}</td>
+                        <td>{{estudiante.email_m}}</td>
+
                         <td>
-                            <a href="{% url 'categorias_editar' categoria.id %}" title="Editar" class="btn btn-warning"><i class="fas fa-pencil"></i></a>
-                            <a href="{% url 'categorias_eliminar' categoria.id %}" title="Eliminar" class="btn btn-danger"><i class="fas fa-trash"></i></a>
+                            <a href="{% url 'estudiantes_editar' estudiante.id %}" title="Editar" class="btn btn-warning"><i class="fas fa-pencil"></i></a>
+                            <a href="{% url 'estudiantes_eliminar' estudiante.id %}" title="Eliminar" class="btn btn-danger"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                 {% endfor %}
-
             </tbody>
         </table>
-        {% comment %} <div class="row">
+        <div class="row">
             <div class="col-12">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
@@ -73,7 +87,7 @@
                     </ul>
                   </nav>
             </div>
-        </div> {% endcomment %}
+        </div>
     </div>
     <div class="card-footer text-muted">
         Footer

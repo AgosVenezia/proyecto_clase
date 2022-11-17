@@ -7,10 +7,21 @@ from django.urls import reverse
 
 from django.template import loader
 
-from cac.forms import ContactoForm, CategoriaForm
+from cac.forms import ContactoForm, CategoriaForm, CursoForm, CategoriaFormValidado, EstudianteMForm,ProyectoForm
+
+from cac.models import Categoria, Curso, EstudianteM, Proyecto
+
 from django.contrib import messages
 
-from cac.models import Categoria
+from django.views.generic import ListView
+from django.views import View
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+"""
+    Vistas de la parte pública
+"""
 
 def index(request):
     #if(request.method=='GET'):
@@ -46,7 +57,22 @@ def index(request):
             #enviar un mail al administrador con los datos
             #guardar los datos en la base
             messages.success(request,'Muchas gracias por contactarte, te esteremos respondiendo en breve.')
-            #messages.info(request,'Otro mensajito')
+            messages.info(request,'Otro mensajito')
+            mensaje=f"De: {contacto_form.cleaned_data['nombre']} <{contacto_form.cleaned_data['email']}>\n Asunto: {contacto_form.cleaned_data['asunto']}\n Mensaje: {contacto_form.cleaned_data['mensaje']}"
+            mensaje_html=f"""
+                <p>De: {contacto_form.cleaned_data['nombre']} <a href="mailto:{contacto_form.cleaned_data['email']}">{contacto_form.cleaned_data['email']}</a></p>
+                <p>Asunto:  {contacto_form.cleaned_data['asunto']}</p>
+                <p>Mensaje: {contacto_form.cleaned_data['mensaje']}</p>
+            """
+            asunto="CONSULTA DESDE LA PAGINA - "+contacto_form.cleaned_data['asunto']
+            send_mail(
+                asunto,
+                mensaje,
+                settings.EMAIL_HOST_USER,
+                [settings.RECIPIENT_ADDRESS],
+                fail_silently=False,
+                html_message=mensaje_html
+            )
             #deberia validar y realizar alguna accion  
         else:
             messages.warning(request,'Por favor revisa los errores')
@@ -113,9 +139,17 @@ def api_proyectos(request,):
     response = {'status':'Ok','code':200,'message':'Listado de proyectos','data':proyectos}
     return JsonResponse(response,safe=False)
 
+"""
+    Vistas de la parte administracion
+"""
+
 def index_administracion(request):
     variable = 'test variable'
     return render(request,'cac/administracion/index_administracion.html',{'variable':variable})
+
+"""
+    CRUD Categorias
+"""
 
 def categorias_index(request):
     #queryset
@@ -125,27 +159,179 @@ def categorias_index(request):
 
 def categorias_nuevo(request):
     if(request.method=='POST'):
-        formulario = CategoriaForm(request.POST)
+        formulario = CategoriaFormValidado(request.POST)
         if formulario.is_valid():
-            nombre = formulario.cleaned_data['nombre']
-            nueva_categoria = Categoria(nombre=nombre)
-            nueva_categoria.save()
+            #nombre = formulario.cleaned_data['nombre']
+            #nueva_categoria = Categoria(nombre=nombre)
+            #nueva_categoria.save()
+            formulario.save()
             return redirect('categorias_index')
     else:
-        formulario = CategoriaForm()
+        #formulario = CategoriaForm()
+        formulario = CategoriaFormValidado()
     return render(request,'cac/administracion/categorias/nuevo.html',{'formulario':formulario})
+
+def categorias_editar(request,id_categoria):
+    try:
+        categoria = Categoria.objects.get(pk=id_categoria)
+    except Categoria.DoesNotExist:
+        return render(request,'cac/administracion/404_admin.html')
+
+    if(request.method=='POST'):
+        formulario = CategoriaFormValidado(request.POST,instance=categoria)
+        if formulario.is_valid():
+            formulario.save()
+            messages.success(request,'Se editó correctamente.')
+            return redirect('categorias_index')
+    else:
+        formulario = CategoriaFormValidado(instance=categoria)
+    return render(request,'cac/administracion/categorias/editar.html',{'formulario':formulario})
 
 def categorias_eliminar(request,id_categoria):
     try:
         categoria = Categoria.objects.get(pk=id_categoria)
     except Categoria.DoesNotExist:
         return render(request,'cac/administracion/404_admin.html')
+    #categoria.delete() lo borra fisicamente de nuestra base
     categoria.soft_delete()
     return redirect('categorias_index')
 
+"""
+    CRUD Cursos
+"""
 
+def cursos_index(request):
+    cursos = Curso.objects.all()
+    return render(request,'cac/administracion/cursos/index.html',{'cursos':cursos})
 
+def cursos_nuevo(request):
+    #forma de resumida de instanciar un formulario basado en model con los
+    #datos recibidos por POST si la petición es por POST o bien vacio(None)
+    #Si la petición es por GET
+    formulario = CursoForm(request.POST or None,request.FILES or None)
+    if formulario.is_valid():
+        formulario.save()
+        messages.success(request,'Se ha creado el curso correctamente')          
+        return redirect('cursos_index')
+    return render(request,'cac/administracion/cursos/nuevo.html',{'formulario':formulario})
 
+def cursos_editar(request,id_curso):
+    try:
+        curso = Curso.objects.get(pk=id_curso)
+    except Curso.DoesNotExist:
+        return render(request,'cac/administracion/404_admin.html')
+    formulario = CursoForm(request.POST or None,request.FILES or None,instance=curso)
+    if formulario.is_valid():
+        formulario.save()
+        messages.success(request,'Se ha editado el curso correctamente')          
+        return redirect('cursos_index')
+    return render(request,'cac/administracion/cursos/editar.html',{'formulario':formulario})
+
+def cursos_eliminar(request,id_curso):
+    try:
+        curso = Curso.objects.get(pk=id_curso)
+    except Curso.DoesNotExist:
+        return render(request,'cac/administracion/404_admin.html')
+    messages.success(request,'Se ha eliminado el curso correctamente')          
+    curso.delete()
+    return redirect('cursos_index')
+
+"""
+    CRUD Estudiantes
+"""
+
+def estudiantes_index(request):
+    estudiantes = EstudianteM.objects.all()
+    return render(request,'cac/administracion/estudiantes/index.html',{'estudiantes':estudiantes})
+
+def estudiantes_nuevo(request):
+    formulario = EstudianteMForm(request.POST or None)
+    if formulario.is_valid():
+        formulario.save()
+        messages.success(request,'Se ha creado al estudiante correctamente')          
+        return redirect('estudiantes_index')
+    return render(request,'cac/administracion/estudiantes/nuevo.html',{'formulario':formulario})
+
+def estudiantes_editar(request,id_estudiante):
+    try:
+        estudiante = EstudianteM.objects.get(pk=id_estudiante)
+    except EstudianteM.DoesNotExist:
+        return render(request,'cac/administracion/404_admin.html')
+    formulario = EstudianteMForm(request.POST or None,request.FILES or None,instance=estudiante)
+    if formulario.is_valid():
+        formulario.save()
+        messages.success(request,'Se ha editado al estudiante correctamente')          
+        return redirect('estudiantes_index')
+    return render(request,'cac/administracion/estudiantes/editar.html',{'formulario':formulario})
+
+def estudiantes_eliminar(request,id_estudiante):
+    try:
+        estudiante = Proyecto.objects.get(pk=id_estudiante)
+    except Proyecto.DoesNotExist:
+        return render(request,'cac/administracion/404_admin.html')
+    estudiante.delete()
+    messages.success(request,'Se ha eliminado al estudiante correctamente')          
+    return redirect('proyectos_index')
+
+"""
+    CRUD Proyectos
+"""
+
+def proyectos_index(request):
+    proyectos = Proyecto.objects.all()
+    return render(request,'cac/administracion/proyectos/index.html',{'proyectos':proyectos})
+
+def proyectos_nuevo(request):
+    formulario = ProyectoForm(request.POST or None,request.FILES or None)
+    if formulario.is_valid():
+        formulario.save()
+        messages.success(request,'Se ha creado el proyecto correctamente')          
+        return redirect('proyectos_index')
+    return render(request,'cac/administracion/proyectos/nuevo.html',{'formulario':formulario})
+
+def proyectos_editar(request,id_proyecto):
+    try:
+        proyecto = Proyecto.objects.get(pk=id_proyecto)
+    except Proyecto.DoesNotExist:
+        return render(request,'cac/administracion/404_admin.html')
+    formulario = ProyectoForm(request.POST or None,request.FILES or None,instance=proyecto)
+    if formulario.is_valid():
+        formulario.save()
+        messages.success(request,'Se ha editado el proyecto correctamente')          
+        return redirect('proyectos_index')
+    return render(request,'cac/administracion/proyectos/editar.html',{'formulario':formulario})
+
+def proyectos_eliminar(request,id_proyecto):
+    try:
+        proyecto = Proyecto.objects.get(pk=id_proyecto)
+    except Proyecto.DoesNotExist:
+        return render(request,'cac/administracion/404_admin.html')
+    messages.success(request,'Se ha eliminado el proyecto correctamente')          
+    proyecto.delete()
+    return redirect('proyectos_index')
+    
+#VISTA BASADA EN CLASES
+class CategoriaListView(ListView): #reemplaza a categorias_index
+    model = Categoria
+    context_object_name = 'lista_categorias'
+    template_name= 'cac/administracion/categorias/index.html'
+    queryset= Categoria.objects.filter(baja=False)
+    ordering = ['nombre']
+
+class CategoriaView(View): #reemplaza a categorias_nuevo
+    form_class = CategoriaFormValidado
+    template_name = 'cac/administracion/categorias/nuevo.html'
+
+    def get(self, request,*args, **kwargs):
+        form = self.form_class()
+        return render(request,self.template_name,{'formulario':form})
+    
+    def post(self,request,*args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('categorias_index')
+        return render(request,self.template_name,{'formulario':form})
 
 
 # Create your views here.

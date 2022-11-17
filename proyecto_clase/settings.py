@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -139,3 +140,22 @@ STATIC_ROOT = BASE_DIR / 'static_root'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#donde vamos a ir guardar los archivos medias debug
+MEDIA_URL = "/media/"
+#media para produccion
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+#constante para poder almacenar los mensaje entre solicitudes en cookies
+#https://docs.djangoproject.com/en/3.2/ref/contrib/messages/#configuring-the-message-engine
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+#Configuracion para el envio de email por medio de GMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'CUENTAGOOGLE'
+# Clave generada desde la configuracion de Google
+EMAIL_HOST_PASSWORD = 'CONTRASEÑA DE APLICACION DE CUENTA GOOGLE' 
+RECIPIENT_ADDRESS = 'test@email.com'
