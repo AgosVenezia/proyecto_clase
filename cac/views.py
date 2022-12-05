@@ -23,6 +23,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 
 from django.contrib.auth.decorators import login_required
+#from django.contrib.auth.views import LoginView
 
 """
     Vistas de la parte pública
@@ -148,7 +149,7 @@ def api_proyectos(request,):
     Vistas de la parte administracion
 """
 
-@login_required
+@login_required(login_url=settings.LOGIN_URL)
 def index_administracion(request):
     variable = 'test variable'
     return render(request,'cac/administracion/index_administracion.html',{'variable':variable})
@@ -351,12 +352,12 @@ def cac_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             form = login(request, user)
-            #nxt = request.GET.get("next",None)
+            nxt = request.GET.get("next",None)
             messages.success(request, f' Bienvenido/a {username} !!')
-            #if nxt is None:
-            return redirect('inicio')
-            #else:
-                #return redirect(nxt)
+            if nxt is None:
+                return redirect('inicio')
+            else:
+                return redirect(nxt)
         else:
             messages.error(request, f'Cuenta o password incorrecto, realice el login correctamente')
     form = AuthenticationForm()
@@ -373,6 +374,10 @@ def cac_registrarse(request):
     else:
         form = RegistrarUsuarioForm()
     return render(request, 'cac/publica/registrarse.html', {'form': form})
+
+#class cacLoginView(LoginView):
+    #redirect_field_name:''
+    #template_name:'cac/publica/login.html'
 
 # Create your views here.
 def hola_mundo(request):
