@@ -44,6 +44,16 @@ class CategoriaAdmin(admin.ModelAdmin):
         #filtered_query = query.filter(baja=False)
         #return filtered_query
 
+#SE AGREGA MODELO DE PERFIL PARA QUE SE CARGUE DESDE EL USER EN ADMIN DE DJANGO
+#class PerfilInline(admin.StackedInline):
+    #model = Perfil
+    #can_delete= False
+    #verbose_name_plural= 'Perfiles'
+
+#class UserAdmin(BaseUserAdmin):
+    #inlines = (PerfilInline,)
+
+
 mi_admin = CacAdminSite(name='cacadmin')
 mi_admin.register(Proyecto)
 mi_admin.register(EstudianteM,EstudianteMAdmin)

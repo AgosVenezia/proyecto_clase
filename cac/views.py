@@ -22,7 +22,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 #from django.contrib.auth.views import LoginView
 
 """
@@ -153,6 +153,14 @@ def api_proyectos(request,):
 def index_administracion(request):
     variable = 'test variable'
     return render(request,'cac/administracion/index_administracion.html',{'variable':variable})
+
+#@login_required(login_url=settings.LOGIN_URL)
+#def index_administracion(request):
+    #EJEMPLO DE CONSULTA SI UN USUARIO PERTENECE A UN GRUPO
+    #if not request.user.groups.filter(name="administracion").exists():
+        #return render(request,'cac/administracion/403_admin.html')
+    #variable = 'test variable'
+    #return render(request,'cac/administracion/index_administracion.html',{'variable':variable})
 
 """
     CRUD Categorias
@@ -375,9 +383,9 @@ def cac_registrarse(request):
         form = RegistrarUsuarioForm()
     return render(request, 'cac/publica/registrarse.html', {'form': form})
 
-#class cacLoginView(LoginView):
-    #redirect_field_name:''
-    #template_name:'cac/publica/login.html'
+#class CacLoginView(LoginView):
+    #redirect_field_name = ''
+    #template_name='cac/publica/login.html'
 
 # Create your views here.
 def hola_mundo(request):

@@ -19,7 +19,7 @@ from django.urls.conf import include
 from cac.admin import mi_admin
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('cacadmin/', mi_admin.urls),
+    path('admin/', admin.site.urls),
     path('',include('cac.urls'))
 ]
