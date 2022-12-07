@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cac',
-    'django_extensions'
+    'django_extensions',
+    'rest_framework',
+    'api_cac'
 ]
 
 MIDDLEWARE = [
@@ -164,4 +166,4 @@ RECIPIENT_ADDRESS = 'test@email.com'
 LOGIN_URL = '/accounts/login/'
 
 LOGIN_REDIRECT_URL = 'inicio'
-# LOGOUT_REDIRECT_URL = 'inicio'
+#LOGOUT_REDIRECT_URL = 'inicio'
