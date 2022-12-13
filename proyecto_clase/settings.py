@@ -78,17 +78,27 @@ WSGI_APPLICATION = 'proyecto_clase.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+#DATABASES = {
+    #'default': {
+        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'NAME': 'cac22819', 
+        #'USER': 'postgres', 
+        #'PASSWORD': 'codoacodo',
+        #'HOST': '127.0.0.1', 
+        #'PORT': '5432',
+    #}
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'cac22819', 
-        'USER': 'postgres', 
+        'USER': 'agosv', 
         'PASSWORD': 'codoacodo',
-        'HOST': '127.0.0.1', 
-        'PORT': '5432',
+        'HOST': 'agosv.mysql.pythonanywhere-services.com', 
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
